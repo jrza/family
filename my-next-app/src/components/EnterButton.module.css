@@ -1,0 +1,14 @@
+.enterButton {
+    background-color: transparent;
+    border: 2px solid var(--accent);
+    color: var(--text);
+    font-size: 24px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .enterButton:hover {
+    background-color: var(--accent);
+    color: var(--background);
+  }

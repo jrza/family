@@ -1,9 +1,11 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Countdown from '@/app/components/Countdown';
-import AnimatedStat from '@/app/components/AnimatedStat';
-import styled from 'styled-components';
+import Countdown from '@/components/Countdown';
+import AnimatedStat from '@/components/AnimatedStat';
+import styled from '@emotion/styled';
+import { theme } from '@/styles/theme';
 
 interface Stats {
   kind: number;
@@ -30,13 +32,28 @@ export default function GreetingPage({ params }: { params: { name: string } }) {
     });
 
     const audio = new Audio('/audio/Birthday.mp3');
-    audio.play().catch((err) => console.error('Audio playback error:', err));
+    
+    // Wait for audio to be loaded
+    audio.addEventListener('canplaythrough', () => {
+      audio.play();
+      
+      // Sync scenes with audio timing
+      const sceneTimings = [
+        1000,  // Initial countdown
+        2000,  // "3"
+        3000,  // "2"
+        4000,  // "1"
+        5000,  // "Get ready for stats"
+        7000,  // First stat
+        12000, // Second stat
+        17000, // "And Finally..."
+        19000, // "BEST MOTHER"
+        22000  // Final scene with video (timed with loud chant)
+      ];
 
-    const sceneTimings = [3000, 3000, 5000, 5000, 3000, 5000];
-    let totalTime = 0;
-    sceneTimings.forEach((time, index) => {
-      totalTime += time;
-      setTimeout(() => setScene(index + 1), totalTime);
+      sceneTimings.forEach((time, index) => {
+        setTimeout(() => setScene(index), time);
+      });
     });
 
     return () => {
@@ -47,7 +64,7 @@ export default function GreetingPage({ params }: { params: { name: string } }) {
 
   return (
     <Container>
-      {scene === 0 && <Countdown />}
+      {scene === 0 && <Countdown onComplete={() => setScene(1)} />}
       {scene === 1 && <Message>Get ready for your stats...</Message>}
       {scene === 2 && (
         <Stat>
@@ -87,8 +104,8 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #fef8e8;
-  color: #ff0080;
+  background-color: ${theme.colors.background};
+  color: ${theme.colors.accent};
   text-align: center;
 `;
 

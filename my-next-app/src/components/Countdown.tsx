@@ -1,23 +1,80 @@
+"use client";
+
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
+import { motion, AnimatePresence } from 'framer-motion';
+import { theme } from '../styles/theme';
 
-const Countdown = () => {
-  const [count, setCount] = useState(3);
+const CountdownContainer = styled(motion.div)`
+  font-family: ${theme.fonts.heading};
+  font-size: 8rem;
+  color: ${theme.colors.accent};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  
+  @media (min-width: 768px) {
+    font-size: 12rem;
+  }
+`;
 
-  useEffect(() => {
-    if (count > 0) {
-      const timer = setTimeout(() => setCount(count - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [count]);
+interface CountdownProps {
+  onComplete: () => void;
+}
 
-  return <CountdownText>{count > 0 ? count : 'Go!'}</CountdownText>;
+const countVariants = {
+  initial: { 
+    opacity: 0, 
+    scale: 0.5,
+  },
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 1.5,
+  }
 };
 
-const CountdownText = styled.div`
-  font-size: 48px;
-  font-weight: bold;
-  color: #ff0080;
-`;
+const Countdown: React.FC<CountdownProps> = ({ onComplete }) => {
+  const [count, setCount] = useState<number>(3);
+
+  useEffect(() => {
+    if (count === 0) {
+      onComplete();
+      return;
+    }
+
+    // Fixed timing for each number
+    const timer = setTimeout(() => {
+      setCount(prev => prev - 1);
+    }, 800); // Total time for each number
+
+    return () => clearTimeout(timer);
+  }, [count, onComplete]);
+
+  return (
+    <AnimatePresence mode="wait">
+      {count > 0 && (
+        <CountdownContainer
+          key={count}
+          variants={countVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{
+            duration: 0.2,
+            ease: [0.23, 1.2, 0.36, 1], // More aggressive spring
+          }}
+        >
+          {count}
+        </CountdownContainer>
+      )}
+    </AnimatePresence>
+  );
+};
 
 export default Countdown;
