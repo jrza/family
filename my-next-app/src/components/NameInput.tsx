@@ -13,7 +13,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 3rem;
   color: ${theme.colors.accent};
   text-align: center;
@@ -21,7 +21,7 @@ const Title = styled.h1`
 `;
 
 const Input = styled.input`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 2rem;
   padding: 1rem;
   background: transparent;
@@ -58,6 +58,12 @@ const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e as unknown as React.FormEvent);
+    }
+  };
+
   return (
     <Container>
       <Title>WHO IS THIS?</Title>
@@ -66,7 +72,9 @@ const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onKeyPress={handleKeyPress}
           autoFocus
+          autoComplete="off"
         />
       </form>
     </Container>
