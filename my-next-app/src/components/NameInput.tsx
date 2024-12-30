@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styled from '@emotion/styled';
 import { theme } from '../styles/theme';
 
@@ -51,18 +51,30 @@ interface NameInputProps {
 const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
   const [name, setName] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (name.toLowerCase().trim() === 'sarwat') {
+  const handleSubmit = useCallback((e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    const trimmedName = name.toLowerCase().trim();
+    if (trimmedName === 'sarwat') {
       onSubmit(name);
     }
-  };
+  }, [name, onSubmit]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSubmit(e as unknown as React.FormEvent);
+      handleSubmit();
     }
-  };
+  }, [handleSubmit]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    // Auto-submit if the name matches
+    if (e.target.value.toLowerCase().trim() === 'sarwat') {
+      setTimeout(() => handleSubmit(), 100);
+    }
+  }, [handleSubmit]);
 
   return (
     <Container>
@@ -71,10 +83,11 @@ const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
         <Input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleChange}
           onKeyPress={handleKeyPress}
           autoFocus
           autoComplete="off"
+          spellCheck="false"
         />
       </form>
     </Container>

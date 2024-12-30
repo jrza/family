@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import NameInput from '../../components/NameInput';
 import Countdown from '../../components/Countdown';
 import StatCounter from '../../components/StatCounter';
-import { playAudio } from '../../utils/audioController';
 import { theme } from '../../styles/theme';
 
 const Container = styled.div`
@@ -94,10 +93,27 @@ export default function CelebrationPage() {
   const [currentImage, setCurrentImage] = useState(1);
 
   const handleNameSubmit = async () => {
-    const audioElement = await playAudio('/audio/birthday.mp3');
-    setAudio(audioElement);
-    setStage(1);
-    setTimeout(() => setStage(2), 5200);
+    try {
+      const audioElement = new Audio('/audio/birthday.mp3');
+      
+      // Preload the audio
+      await new Promise((resolve, reject) => {
+        audioElement.addEventListener('canplaythrough', resolve, { once: true });
+        audioElement.addEventListener('error', reject);
+        audioElement.load();
+      });
+
+      // Start playing and move to next stage
+      await audioElement.play();
+      setAudio(audioElement);
+      setStage(1);
+      setTimeout(() => setStage(2), 5200);
+    } catch (error) {
+      console.error('Audio failed to load:', error);
+      // Proceed anyway even if audio fails
+      setStage(1);
+      setTimeout(() => setStage(2), 5200);
+    }
   };
 
   const handleCountdownComplete = () => {
@@ -137,11 +153,12 @@ export default function CelebrationPage() {
     }
   }, [stage]);
 
-  // Cleanup audio
+  // Cleanup audio on unmount
   useEffect(() => {
     return () => {
       if (audio) {
         audio.pause();
+        audio.currentTime = 0;
       }
     };
   }, [audio]);
