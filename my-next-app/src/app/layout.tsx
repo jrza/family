@@ -3,6 +3,7 @@
 import { Racing_Sans_One, Inter } from 'next/font/google';
 import styled from '@emotion/styled';
 import { theme } from '../styles/theme';
+import EmotionRegistry from './registry';
 
 const racing = Racing_Sans_One({ 
   weight: '400',
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${racing.variable} ${inter.variable}`}>
       <body>
-        <StyledBody>{children}</StyledBody>
+        <EmotionRegistry>
+          <StyledBody>{children}</StyledBody>
+        </EmotionRegistry>
       </body>
     </html>
   );

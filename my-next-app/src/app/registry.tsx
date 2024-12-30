@@ -1,27 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
 import { useServerInsertedHTML } from 'next/navigation';
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
 
-export default function StyledComponentsRegistry({
-  children,
+export default function EmotionRegistry({
+  children
 }: {
   children: React.ReactNode;
 }) {
-  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
+  const cache = React.useMemo(() => createCache({ key: 'emotion-cache' }), []);
+  cache.compat = true;
 
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    styledComponentsStyleSheet.instance.clearTag();
-    return <>{styles}</>;
-  });
+  useServerInsertedHTML(() => (
+    <style
+      data-emotion={`${cache.key} ${Object.keys(cache.inserted).join(' ')}`}
+      dangerouslySetInnerHTML={{
+        __html: Object.values(cache.inserted).join(' '),
+      }}
+    />
+  ));
 
-  if (typeof window !== 'undefined') return <>{children}</>;
-
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children}
-    </StyleSheetManager>
-  );
+  return <CacheProvider value={cache}>{children}</CacheProvider>;
 } 
