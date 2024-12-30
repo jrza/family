@@ -25,7 +25,7 @@ const Content = styled(motion.div)`
 `;
 
 const Message = styled(motion.h2)`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 2rem;
   color: ${theme.colors.accent};
   text-align: center;
@@ -95,16 +95,21 @@ export default function CelebrationPage() {
   const handleNameSubmit = async () => {
     try {
       const audioElement = new Audio('/audio/birthday.mp3');
+      audioElement.volume = 1;
       
       // Preload the audio
       await new Promise((resolve, reject) => {
         audioElement.addEventListener('canplaythrough', resolve, { once: true });
         audioElement.addEventListener('error', reject);
+        audioElement.preload = 'auto';
         audioElement.load();
       });
 
       // Start playing and move to next stage
-      await audioElement.play();
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+      }
       setAudio(audioElement);
       setStage(1);
       setTimeout(() => setStage(2), 5200);
@@ -139,6 +144,12 @@ export default function CelebrationPage() {
   // Handle image cycling for final scene
   useEffect(() => {
     if (stage === 7) {
+      // Preload all images
+      for (let i = 1; i <= 5; i++) {
+        const img = new Image();
+        img.src = `/image/P${i}.jpg`;
+      }
+
       let count = 0;
       const interval = setInterval(() => {
         count++;
@@ -258,6 +269,7 @@ export default function CelebrationPage() {
                 <SlideImage
                   key={currentImage}
                   src={`/image/P${currentImage}.jpg`}
+                  alt={`Family Photo ${currentImage}`}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -274,7 +286,8 @@ export default function CelebrationPage() {
                   fontWeight: 'bold',
                   letterSpacing: '2px',
                   position: 'relative',
-                  zIndex: 3
+                  zIndex: 3,
+                  fontFamily: 'var(--font-racing)'
                 }}
               >
                 HAPPY BIRTHDAY MAMA!!

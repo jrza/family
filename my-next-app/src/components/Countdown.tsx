@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { theme } from '../styles/theme';
 
 const CountdownContainer = styled(motion.div)`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 8rem;
   color: ${theme.colors.accent};
   display: flex;

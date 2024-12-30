@@ -16,7 +16,7 @@ const StatContainer = styled(motion.div)`
 `;
 
 const Label = styled.h2`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 1.5rem;
   color: ${theme.colors.accent};
   margin: 0;
@@ -28,7 +28,7 @@ const Label = styled.h2`
 `;
 
 const Counter = styled.div`
-  font-family: ${theme.fonts.heading};
+  font-family: var(--font-racing);
   font-size: 3rem;
   color: ${theme.colors.text};
   
