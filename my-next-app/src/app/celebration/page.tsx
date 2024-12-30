@@ -94,28 +94,46 @@ export default function CelebrationPage() {
 
   const handleNameSubmit = async () => {
     try {
-      const audioElement = new Audio('/audio/birthday.mp3');
+      const audioElement = document.createElement('audio');
+      audioElement.src = '/audio/birthday.mp3';
+      audioElement.id = 'bgMusic';
       audioElement.volume = 1;
+      audioElement.preload = 'auto';
+      document.body.appendChild(audioElement);
       
-      // Preload the audio
-      await new Promise((resolve, reject) => {
-        audioElement.addEventListener('canplaythrough', resolve, { once: true });
-        audioElement.addEventListener('error', reject);
-        audioElement.preload = 'auto';
-        audioElement.load();
-      });
+      const playAudio = async () => {
+        try {
+          const playPromise = audioElement.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            setAudio(audioElement);
+          }
+          setStage(1);
+          setTimeout(() => setStage(2), 5200);
+        } catch (error) {
+          console.error('Playback failed:', error);
+          // Proceed without audio
+          setStage(1);
+          setTimeout(() => setStage(2), 5200);
+        }
+      };
 
-      // Start playing and move to next stage
-      const playPromise = audioElement.play();
-      if (playPromise !== undefined) {
-        await playPromise;
-      }
-      setAudio(audioElement);
-      setStage(1);
-      setTimeout(() => setStage(2), 5200);
+      // Try to play immediately
+      await playAudio();
+
+      // Backup: try to play on user interaction
+      const handleUserInteraction = async () => {
+        if (!audio) {
+          await playAudio();
+        }
+      };
+
+      document.addEventListener('click', handleUserInteraction, { once: true });
+      document.addEventListener('touchstart', handleUserInteraction, { once: true });
+
     } catch (error) {
-      console.error('Audio failed to load:', error);
-      // Proceed anyway even if audio fails
+      console.error('Audio setup failed:', error);
+      // Proceed without audio
       setStage(1);
       setTimeout(() => setStage(2), 5200);
     }
@@ -144,12 +162,6 @@ export default function CelebrationPage() {
   // Handle image cycling for final scene
   useEffect(() => {
     if (stage === 7) {
-      // Preload all images
-      for (let i = 1; i <= 5; i++) {
-        const img = new Image();
-        img.src = `/image/P${i}.jpg`;
-      }
-
       let count = 0;
       const interval = setInterval(() => {
         count++;

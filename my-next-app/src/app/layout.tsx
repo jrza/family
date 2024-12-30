@@ -28,6 +28,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${racing.variable} ${inter.variable}`}>
+      <head>
+        <link
+          rel="preload"
+          href="/audio/birthday.mp3"
+          as="audio"
+          type="audio/mpeg"
+        />
+      </head>
       <body>
         <StyledBody>{children}</StyledBody>
       </body>
