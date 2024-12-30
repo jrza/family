@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,14 @@ interface Stats {
   wife: number;
 }
 
-export default function GreetingPage({ params }: { params: { name: string } }) {
+type Props = {
+  params: {
+    name: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+export default function Page({ params }: Props) {
   const { name } = params;
   const [scene, setScene] = useState<number>(0);
   const [stats, setStats] = useState<Stats>({ kind: 0, wife: 0 });
@@ -33,11 +40,9 @@ export default function GreetingPage({ params }: { params: { name: string } }) {
 
     const audio = new Audio('/audio/Birthday.mp3');
     
-    // Wait for audio to be loaded
     audio.addEventListener('canplaythrough', () => {
       audio.play();
       
-      // Sync scenes with audio timing
       const sceneTimings = [
         1000,  // Initial countdown
         2000,  // "3"
@@ -48,7 +53,7 @@ export default function GreetingPage({ params }: { params: { name: string } }) {
         12000, // Second stat
         17000, // "And Finally..."
         19000, // "BEST MOTHER"
-        22000  // Final scene with video (timed with loud chant)
+        22000  // Final scene with video
       ];
 
       sceneTimings.forEach((time, index) => {
